@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "__MSG_extName__",
-  "version": "__AutoReplaced_Extension_Version__",
+  "version": "1.0.0.0",
   "description": "__MSG_extDesc__",
   "content_scripts": [
     {
@@ -40,16 +40,6 @@
     },
     {
       "matches": [
-        "*://v.youku.com/v_show/*"
-      ],
-      "all_frames": true,
-      "js": [
-        "official_html5_enabler.js"
-      ],
-      "run_at": "document_start"
-    },
-    {
-      "matches": [
         "*://v-wb.youku.com/*"
       ],
       "all_frames": true,
@@ -62,6 +52,7 @@
   "background": {
     "scripts": [
       "hookFetch_background.js",
+      "playerCounter_background.js",
       "script_executer.js"
     ],
     "persistent": true
@@ -72,7 +63,9 @@
   },
   "permissions": [
     "*://*/*",
-    "storage"
+    "storage",
+    "clipboardWrite",
+    "alarms"
   ],
   "icons": {
     "48": "icon.png"

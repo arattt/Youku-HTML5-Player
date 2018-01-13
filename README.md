@@ -1,17 +1,26 @@
-# Youku HTML5播放器扩展
-作者：esterTion
+# Yet Another Player for Youku - 更好用的优酷播放器 扩展  
+作者：esterTion  
 
-[关于官方内测html5播放器](native-html5.md)
+> 旧名`Youku HTML5播放器`  
+
+### 关于更名
+项目于2017/10/28正式更名为Yet Another Player for Youku  
+这个项目的初始目的是，在优酷全站依然坚持使用flash的情况下，帮助所有默认或手动禁用flash的浏览器能够正常观看视频  
+同时这也是没有开发用于爱奇艺和腾讯视频的扩展的原因，因为去除广告不是根本目的，能够无flash正常观看才是  
+现在，优酷已经全站，包括站外外链都启用了HTML5播放器，故而旧的名字也就不再适合，因为这并不是官方开发的HTML5播放器  
+对于官方的HTML5播放器，有缺陷是必定的，同时我建议向官方反馈你们的真正需求。一个功能有更多人反馈要求，才更有可能快速的添加到播放器中  
+时至今日，国内最大的三个视频站点均已支持HTML5播放器，这是浏览器厂商的强硬与网民的坚持造就的结果，我们也应为此自豪  
+
+[关于官方html5播放器](native-html5.md)
 
 ![](icon.png)
 
-[更新日志](update_note.md)
-- *uBlock扩展会导致本扩展无法正常工作，请禁用后在优酷站点刷新一次，再次启用即会正常*
-> [@xinggsf]测试得出：放行tip.soku.com即可，如果还不行，放行g.alicdn.com和log.mmstat.com的东西即可
+> `权限说明`剪贴板权限为复制弹幕功能所需，并且扩展只获取写入的权限，无权读取已复制内容
 
-## 安装
-- [Firefox](https://addons.mozilla.org/zh-CN/firefox/addon/youku-html5-player/)([xpi直接安装](https://estertion.github.io/Youku-HTML5-Player/signed.xpi)) (firefox 50.0+)
-- [Chrome](https://chrome.google.com/webstore/detail/youku-html5-player/fpnknfakcmgkbhccgpgnbaddggjligol)([crx分流](https://estertion.github.io/Youku-HTML5-Player/signed.crx))（[xiaoC](http://www.jijidown.com)友情交易滋糍）(chrome 50.0+)
+## 安装  
+当前版本：[![VERSION_TAG_NUMBER](https://img.shields.io/github/tag/esterTion/Youku-HTML5-Player.svg)](update_note.md)
+- [Firefox ![Mozilla扩展中心](https://img.shields.io/amo/users/youku-html5-player.svg)](https://addons.mozilla.org/zh-CN/firefox/addon/youku-html5-player/) ([xpi直接安装](https://estertion.github.io/Youku-HTML5-Player/signed.xpi)) (firefox 50.0+)
+- [Chrome ![Chrome商店](https://img.shields.io/chrome-web-store/users/fpnknfakcmgkbhccgpgnbaddggjligol.svg)](https://chrome.google.com/webstore/detail/youku-html5-player/fpnknfakcmgkbhccgpgnbaddggjligol) ([crx分流](https://estertion.github.io/Youku-HTML5-Player/signed.crx)) (chrome 50.0+)
 
 ## 部分功能说明
 - 清晰度切换位于播放器左下角，采用智能记忆模式
@@ -30,20 +39,20 @@
 - [flv.js](https://github.com/esterTion/flv.js/releases)
 - ABPlayer-bilibili-ver（有改动）
 
-![](https://estertion.win/wp-content/uploads/2017/06/227b73c94a8766549bb100e67443cd145fdad09a.png)
+![](http://wx2.sinaimg.cn/large/763783e4ly1fjbcqqy7owj20zk0m8421.jpg)
 ![](https://estertion.win/wp-content/uploads/2017/06/d0af1f732f6fffbd47543d6ee070198df57f8349.png)
 
 # English Version
 ## Youku HTML5 Player extension
 Author: esterTion
 
-- *uBlock Origin extension may conflict with playback, please disable it and refresh Youku page once, then you can enable it again*
-> [@xinggsf] tested that you can bypass urls matching `tip.soku.com`, `g.alicdn.com` and `log.mmstat.com`
+> `Permission note` Pasteboard permission is for copying comment, extension only request write permission and cannot read your copied content
 
 ## Install
 
-- [Firefox](https://addons.mozilla.org/zh-CN/firefox/addon/youku-html5-player/)([xpi direct install](https://estertion.github.io/Youku-HTML5-Player/signed.xpi)) (firefox 50.0+)
-- [Chrome](https://chrome.google.com/webstore/detail/youku-html5-player/fpnknfakcmgkbhccgpgnbaddggjligol)([crx mirror](https://estertion.github.io/Youku-HTML5-Player/signed.crx))（Published with help from [xiaoC](http://www.jijidown.com)）(chrome 50.0+)
+Current version：[![VERSION_TAG_NUMBER](https://img.shields.io/github/tag/esterTion/Youku-HTML5-Player.svg)](update_note.md)
+- [Firefox ![Mozilla Add-on](https://img.shields.io/amo/users/youku-html5-player.svg)](https://addons.mozilla.org/zh-CN/firefox/addon/youku-html5-player/) ([xpi direct install](https://estertion.github.io/Youku-HTML5-Player/signed.xpi)) (firefox 50.0+)
+- [Chrome ![Chrome Web Store](https://img.shields.io/chrome-web-store/users/fpnknfakcmgkbhccgpgnbaddggjligol.svg)](https://chrome.google.com/webstore/detail/youku-html5-player/fpnknfakcmgkbhccgpgnbaddggjligol) ([crx mirror](https://estertion.github.io/Youku-HTML5-Player/signed.crx)) (chrome 50.0+)
 
 ## Some feature notes
 - Video quality switch located at bottom-left corner of player, and uses smart memorize mode

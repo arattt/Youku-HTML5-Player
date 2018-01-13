@@ -70,7 +70,8 @@ var CommentSpaceAllocator = (function () {
         ];
         this.avoid = 1;
         this._width = width;
-        this._height = height;
+		this._height = height;
+		this.length = 0;
     }
     CommentSpaceAllocator.prototype.willCollide = function (existing, check) {
         return existing.stime + existing.ttl >= check.stime + check.ttl / 2;
@@ -123,6 +124,7 @@ var CommentSpaceAllocator = (function () {
         return this.assign(comment, cindex + 1);
     };
     CommentSpaceAllocator.prototype.add = function (comment) {
+		this.length++;
         if (comment.height > this._height) {
             comment.cindex = -2;
             comment.y = 0;
@@ -153,7 +155,8 @@ var CommentSpaceAllocator = (function () {
         var index = this._pools[comment.cindex].indexOf(comment);
         if (index < 0)
             return;
-        this._pools[comment.cindex].splice(index, 1);
+		this._pools[comment.cindex].splice(index, 1);
+		this.length--;
     };
     CommentSpaceAllocator.prototype.setBounds = function (width, height) {
         this._width = width;
@@ -300,7 +303,9 @@ var CoreComment = (function () {
         else {
             this.dom = document.createElement("div");
         }
-        this.dom.className = this.parent.options.global.className;
+		this.dom.className = this.parent.options.global.className;
+		this.parent.options.global.outline && this.dom.classList.add('outline');
+		this.parent.options.global.shadow && this.dom.classList.add('shadow');
         this.dom.appendChild(document.createTextNode(this.text));
         this.dom.textContent = this.text;
         this.dom.innerText = this.text;
@@ -451,7 +456,7 @@ var CoreComment = (function () {
             color = color.length >= 6 ? color : new Array(6 - color.length + 1).join("0") + color;
             this.dom.style.color = "#" + color;
             if (this._color === 0) {
-                this.dom.className = this.parent.options.global.className + " rshadow";
+                this.dom.classList.add("rshadow");
             }
         },
         enumerable: true,
@@ -770,7 +775,10 @@ var CommentManager = (function() {
 				className:"cmt",
 				useCSS:false,
 				autoOpacity:false,
-				autoOpacityVal:1
+				autoOpacityVal:1,
+				density: 0,
+				outline: false,
+				shadow: true
 			},
 			scroll:{
 				opacity:1,
@@ -876,7 +884,7 @@ var CommentManager = (function() {
 				if(prevRatio != ratio){
 					self.runline.forEach(function(i){
 						if(i.textData)
-						commentCanvasDrawer(i)
+						commentCanvasDrawer(i, self.options.global.outline, self.options.global.shadow)
 					})
 					prevRatio = ratio;
 				}
@@ -1063,6 +1071,7 @@ var CommentManager = (function() {
 		});
 	},
 	canvasDrawScroll=function(cmMgr){
+		//console.log('static call',performance.now())
 		var canvas=cmMgr.canvas, ctx=canvas.getContext('2d'), devicePixelRatio = window.devicePixelRatio,
 		canvasWidth = cmMgr.width, canvasHeight,
 		x, y,
@@ -1168,9 +1177,9 @@ var CommentManager = (function() {
 			cmt.dur = ( cmt.parent.width + cmt.width ) / cmt.speed * 1e3;
 			cmt.ttl = cmt.dur - runned;
 		}
-	},commentCanvasDrawer = function(cmt){
+	},commentCanvasDrawer = function(cmt, outline, shadow){
 		var commentCanvas = document.createElement('canvas'), commentCanvasCtx = commentCanvas.getContext('2d'), devicePixelRatio = window.devicePixelRatio;
-		commentCanvasCtx.font = (cmt.size * devicePixelRatio) + 'px ' + font;
+		commentCanvasCtx.font = 'bold '+ (cmt.size * devicePixelRatio) + 'px ' + font;
 		commentCanvasCtx.imageSmoothingEnabled = false;
 		cmt.width = ceil(commentCanvasCtx.measureText(cmt.text).width / devicePixelRatio)+2;
 		cmt.height = ceil(cmt.size+3)+2;
@@ -1179,17 +1188,21 @@ var CommentManager = (function() {
 		
 		commentCanvas.width = cmt.oriWidth;
 		commentCanvas.height = cmt.oriHeight;
-		commentCanvasCtx.font = (cmt.size * devicePixelRatio) + 'px ' + font;
-		commentCanvasCtx.lineWidth = round(1 * devicePixelRatio);
+		commentCanvasCtx.font = 'bold '+ (cmt.size * devicePixelRatio) + 'px ' + font;
+		commentCanvasCtx.lineWidth = .7 * devicePixelRatio;
 		commentCanvasCtx.strokeStyle = (cmt._color == 0) ? '#FFFFFF' : '#000000';
 		commentCanvasCtx.textBaseline = 'bottom';
 		commentCanvasCtx.textAlign = 'left';
 		
-		commentCanvasCtx.shadowBlur = round(2 * devicePixelRatio);
-		commentCanvasCtx.shadowColor = (cmt._color == 0) ? '#FFFFFF' : '#000000';
+		if(shadow) {
+			commentCanvasCtx.lineWidth = .25 * devicePixelRatio;
+			commentCanvasCtx.shadowBlur = 2 * devicePixelRatio;
+			commentCanvasCtx.shadowColor = (cmt._color == 0) ? '#FFFFFF' : '#000000';
+		}
 		commentCanvasCtx.fillStyle = '#' + colorGetter(cmt.color);
-		commentCanvasCtx.strokeText(cmt.text, 1, commentCanvas.height-1);
 		commentCanvasCtx.fillText(cmt.text, 1, commentCanvas.height-1);
+		if (outline)
+			commentCanvasCtx.strokeText(cmt.text, 1, commentCanvas.height-1);
 		
 		if(cmt.border){
 			commentCanvasCtx.lineWidth = round(2 * devicePixelRatio);
@@ -1226,12 +1239,12 @@ var CommentManager = (function() {
 	};
 	CommentManager.prototype.sendAsync = function(data){
 		if(data.mode === 8){
-			console.log(data);
 			if(this.scripting){
-				console.log(this.scripting.eval(data.code));
+				this.scripting.eval(data.code);
 			}
 			return;
 		}
+		if(this.options.global.density > 0 && data.mode == 1 && data.border !== true && this.csa.scroll.length>=this.options.global.density) return false;
 		if(this.filter != null){
 			data = this.filter.doModify(data);
 			if(data == null || data === false) return;
@@ -1242,7 +1255,7 @@ var CommentManager = (function() {
 			var now = performance.now();
 			var cmt = new CoreComment(this, data);
 			cmt.dom = {style:{}};
-			commentCanvasDrawer(cmt);
+			commentCanvasDrawer(cmt, this.options.global.outline, this.options.global.shadow);
 			if( data.mode == 1 || data.mode == 6){
 				cmt.rx = 0;
 				cmt.x = this.width;

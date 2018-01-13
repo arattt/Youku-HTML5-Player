@@ -33,6 +33,7 @@ ABP.Strings={
 	statsCurrentBitrate:_t('statsCurrentBitrate'),
 	statsRealtimeBitrate:_t('statsRealtimeBitrate'),
 	overallBitrate:_t('overallBitrate'),
+	reload:_t('reload'),
 	statsDownloadSpeed:_t('statsDownloadSpeed'),
 	statsSourceHost:_t('statsSourceHost'),
 	statsRedirection:_t('statsRedirection'),
@@ -51,6 +52,7 @@ ABP.Strings={
 	
 	commentSpeed:_t('commentSpeed'),
 	commentScale:_t('commentScale'),
+	commentDensity:_t('commentDensity'),
 	commentOpacity:_t('commentOpacity'),
 	commentBlock:_t('commentBlock'),
 	
@@ -84,6 +86,7 @@ ABP.Strings={
 	fetchURL:_t('fetchURL'),
 	buffering:_t('buffering'),
 	play:_t('play'),
+	next:_t('next'),
 	pause:_t('pause'),
 	mute:_t('mute'),
 	unmute:_t('unmute'),
@@ -131,7 +134,15 @@ ABP.Strings={
 	recordPlaySpeed:_t('recordPlaySpeed'),
 	settPlayer:_t('settPlayer'),
 	autoPlay:_t('autoPlay'),
-	defaultFull:_t('defaultFull')
+	defaultFull:_t('defaultFull'),
+	playerTheme:_t('playerTheme'),
+	cmStyle:_t('cmStyle'),
+	cmStyle_st:_t('cmStyle_st'),
+	cmStyle_sh:_t('cmStyle_sh'),
+	cmStyle_stsh:_t('cmStyle_stsh'),
+
+	volumeChange:_t('volumeChange'),
+	rateChange:_t('rateChange')
 };
 
 (function() {
@@ -139,7 +150,7 @@ ABP.Strings={
 	if (!ABP) return;
 	var $$ = jQuery,
 	addEventListener='addEventListener',
-	versionString='HTML5 Player ver.170512 based on ABPlayer-bilibili-ver',
+	versionString='HTML5 Player ver.171228 based on ABPlayer-bilibili-ver',
 	mousePrevPos=[0,0],
 	mouseMoved=function(e){
 		var oldPos=mousePrevPos;
@@ -183,6 +194,17 @@ ABP.Strings={
 			} else if (this.msRequestFullscreen) {
 				this.msRequestFullscreen();
 			}
+		}
+	}
+
+	var videoProto = Object.keys(HTMLVideoElement.prototype);
+	if (videoProto.indexOf("webkitDecodedFrameCount") != -1 && videoProto.indexOf("getVideoPlaybackQuality") == -1) {
+		//Workaround for a fake videoPlaybackQuality
+		HTMLVideoElement.prototype.getVideoPlaybackQuality = function () {
+			return {
+				totalVideoFrames: this.webkitDecodedFrameCount,
+				droppedVideoFrames: this.webkitDroppedFrameCount
+			};
 		}
 	}
 
@@ -485,6 +507,7 @@ ABP.Strings={
 				_('div',{className:'flvjs',title:'1 kbps = 1000 bps'},[_('span',{className:'stats_name'},[_('text',ABP.Strings.statsCurrentBitrate)]),_('span')]),
 				
 				_('div',{title:'1 kbps = 1000 bps'},[_('span',{className:'stats_name'},[_('text',ABP.Strings.overallBitrate)]),_('span',{id:'overall-bitrate'})]),
+				_('div',{className:'flvjs',style:{position:'relative'}},[_('div',{style:{position:'absolute',left:'240px',bottom:'100%',cursor:'pointer'},event:{click:function(e){e.stopPropagation(),flvplayer&&flvplayer.reloadSegment&&flvplayer.reloadSegment()}}},[_('text','[ '+ABP.Strings.reload+' ]')])]),
 				_('div',{className:'flvjs',title:'1 kbps = 1000 bps'},[_('span',{className:'stats_name'},[_('text',ABP.Strings.statsRealtimeBitrate)]),_('span',{className:'stats-column',id:'realtime-bitrate-column',style:{verticalAlign:'top'}}),_('span')]),
 				_('div',{className:'flvjs'},[_('span',{className:'stats_name'},[_('text',ABP.Strings.statsDownloadSpeed)]),_('span',{className:'stats-column',id:'download-speed-column',style:{verticalAlign:'top'}}),_('span')]),
 				_('div',{className:'flvjs'},[_('span',{className:'stats_name'},[_('text',ABP.Strings.statsSourceHost)]),_('span')]),
@@ -492,17 +515,9 @@ ABP.Strings={
 				_('br'),
 
 				_('div',{id:'canvas-fps'},[_('span',{className:'stats_name'},[_('text','Canvas fps：')]),_('span')]),
-				_('div',{className:'gecko'},[_('span',{className:'stats_name'},[_('text',ABP.Strings.statsMozParse)]), _('span',{id:'mozParsedFrames'})]),
-				_('div',{className:'gecko'},[_('span',{className:'stats_name'},[_('text',ABP.Strings.statsMozDecode)]), _('span',{id:'mozDecodedFrames'})]),
-				_('div',{className:'gecko'},[_('span',{className:'stats_name'},[_('text',ABP.Strings.statsMozPaint)]), _('span',{id:'mozPaintedFrames'})]),
-				//_('div',{className:'gecko'},[_('text',ABP.Strings.statsMozPresent), _('span',{id:'mozPresentedFrames'})]),
-				//_('div',{className:'gecko'},[_('text',ABP.Strings.statsMozDrop), _('span',{id:'mozDroppedFrames'})]),
-
-				_('div',{className:'webkit'},[_('span',{className:'stats_name'},[_('text',ABP.Strings.statsWebkitDecode)]), _('span',{id:'webkitDecodedFrameCount'})]),
-				_('div',{className:'webkit'},[_('span',{className:'stats_name'},[_('text',ABP.Strings.statsDrop)]), _('span',{id:'webkitDroppedFrameCount'})]),
 				
-				_('div',{className:'videoQuality'},[_('span',{className:'stats_name'},[_('text',ABP.Strings.statsPresent)]), _('span',{id:'totalVideoFrames'})]),
-				_('div',{className:'videoQuality'},[_('span',{className:'stats_name'},[_('text',ABP.Strings.statsDrop)]), _('span',{id:'droppedVideoFrames'})]),
+				_('div',{className:'videoQuality'},[_('span',{className:'stats_name'},[_('text',ABP.Strings.statsPresent)]), ,_('span',{className:'stats-column',id:'playback-fps-column'}),_('span')]),
+				_('div',{className:'videoQuality'},[_('span',{className:'stats_name'},[_('text',ABP.Strings.statsDrop)]), ,_('span',{className:'stats-column',id:'drop-fps-column'}),_('span')]),
 				
 				_('br'),
 				_('div',{style:{fontSize:'11px'}},[_('text',versionString)]),
@@ -606,6 +621,9 @@ ABP.Strings={
 		}, [
 			_("div", {
 				"className": "button ABP-Play icon-play"
+			}),
+			_("div", {
+				"className": "button ABP-Next icon-next"
 			}),
 			_("div", {
 				"className": "progress-bar"
@@ -771,6 +789,18 @@ ABP.Strings={
 				]),
 			]), _("p", {
 				"className": "label"
+			}, [_("text", ABP.Strings.commentDensity)]), _("div", {
+				"className": "density-bar"
+			}, [
+				_("div", {
+					"className": "bar"
+				}, [
+					_("div", {
+						"className": "load"
+					})
+				]),
+			]), _("p", {
+				"className": "label"
 			}, [_("text", ABP.Strings.commentOpacity),_("div", {
 				"className": "prop-checkbox",
 				style:{
@@ -790,7 +820,13 @@ ABP.Strings={
 						"className": "load"
 					})
 				]),
-			]), _("div", {
+			]),
+			_('p',{className:'label prop'},[_('text',ABP.Strings.cmStyle),_("select",{id:'setting-cmStyle',event:{mouseup:function(e){e.stopPropagation();}}},[
+				_('option',{value:'0-1'},[_('text',ABP.Strings.cmStyle_st)]),
+				_('option',{value:'1-0'},[_('text',ABP.Strings.cmStyle_sh)]),
+				_('option',{value:'1-1'},[_('text',ABP.Strings.cmStyle_stsh)])
+			])]),
+			_("div", {
 				"className": "shield-enrty"
 			}, [
 				_("text", ABP.Strings.commentBlock),
@@ -823,9 +859,13 @@ ABP.Strings={
 			_('p',{className:'label big'},[_('text',ABP.Strings.settPlayer)]),
 			_('p',{className:'label prop'},[_('text',ABP.Strings.autoPlay),_("div",{id:'setting-autoPlay',className:"prop-checkbox"})]),
 			_('p',{className:'label prop'},[_('text',ABP.Strings.defaultFull),_("div",{id:'setting-defaultFull',className:"prop-checkbox"})]),
+			_('p',{className:'label prop'},[_('text',ABP.Strings.playerTheme +'：'),_("select",{id:'setting-playerTheme',event:{mouseup:function(e){e.stopPropagation();}}},[
+				_('option',{value:'bilibili'},[_('text','BiliBili')]),
+				_('option',{value:'YouTube'},[_('text','YouTube')])
+			])]),
 
 			_('p',{className:'label big'},[_('text',_t('settExtension'))]),
-			_('iframe',{src:chrome.extension.getURL("options.html"),style:{width:'100%',height:'80px',border:'none'}})
+			_('iframe',{src:chrome.extension.getURL("options.html"),style:{width:'100%',height:'100px',border:'none'}})
 			//end
 			])
 		])]));
@@ -843,29 +883,8 @@ ABP.Strings={
 				_('div',{className:'about'},[_('text',versionString)])
 			])
 		]));
+		container.getElementsByClassName('ABP-Next')[0].innerHTML='<svg xmlns="http://www.w3.org/2000/svg" height="19" version="1.1" viewBox="0 0 12 12" width="19"><path d="M 0,12 8.5,6 0,0 V 24 z M 10,0 v 0 h 2 V 12 h -2 z"/></svg>';
 		var bind = ABP.bind(container);
-		if (playlist.length > 0) {
-			var currentVideo = playlist[0];
-			bind.gotoNext = function() {
-				var index = playlist.indexOf(currentVideo) + 1;
-				if (index < playlist.length) {
-					currentVideo = playlist[index];
-					currentVideo.style.display = "";
-					var container = bind.video.parentNode;
-					container.removeChild(bind.video);
-					container.appendChild(currentVideo);
-					bind.video.style.display = "none";
-					bind.video = currentVideo;
-					bind.swapVideo(currentVideo);
-					currentVideo[addEventListener]("ended", function() {
-						bind.gotoNext();
-					});
-				}
-			}
-			currentVideo[addEventListener]("ended", function() {
-				bind.gotoNext();
-			});
-		}
 		return bind;
 	}
 	var getBuffer=function(video){
@@ -889,6 +908,7 @@ ABP.Strings={
 		var ABPInst = {
 			playerUnit: playerUnit,
 			btnPlay: null,
+			btnNext: null,
 			barTime: null,
 			barLoad: null,
 			barTimeHitArea: null,
@@ -939,6 +959,7 @@ ABP.Strings={
 				w: 0,
 				h: 0
 			},
+			inited: false,
 			state: buildFromDefaults(state, {
 				fullscreen: false,
 				commentVisible: true,
@@ -1010,6 +1031,8 @@ ABP.Strings={
 				}
 			}
 			video[addEventListener]("timeupdate", bufferListener);
+			video[addEventListener]('timeupdate', function(e){ABPInst.inited=true;});
+			video[addEventListener]('canplay', function(e){ABPInst.inited=true;});
 			var lastCheckTime = 0,isFirst=true,isEnded=false,isLooping=false,loadingNew=false,
 			autoPlay=function(){
 				loadingNew=false;
@@ -1098,15 +1121,13 @@ ABP.Strings={
 			video[addEventListener]("ended", function() {
 				ABPInst.btnPlay.className = "button ABP-Play icon-play";
 				ABPInst.videoDiv.className='ABP-Video';
-				if(window.parent!=window && parent.h5NextPart)
-					parent.h5NextPart();
 			});
 			video[addEventListener]("progress", bufferListener);
 			video.isBound = true;
 			var lastPosition = 0,triedLoadScripting=false;
 			if (ABPInst.cmManager) {
 				ABPInst.cmManager.setBounds = function() {
-					if (playerUnit.offsetHeight <= 300 || playerUnit.offsetWidth <= 700) {
+					if (playerUnit.offsetHeight <= 300 || playerUnit.offsetWidth <= 600) {
 						addClass(playerUnit, "ABP-Mini");
 					} else {
 						removeClass(playerUnit, "ABP-Mini");
@@ -1215,6 +1236,16 @@ ABP.Strings={
 		ABPInst.btnPlay = _p[0];
 		ABPInst.btnPlay.tooltip(ABP.Strings.play);
 		hoverTooltip(ABPInst.btnPlay);
+		/** Bind the Next Button **/
+		var _n = playerUnit.getElementsByClassName("ABP-Next");
+		if (_n.length <= 0) return;
+		ABPInst.btnNext = _n[0];
+		ABPInst.btnNext.tooltip(ABP.Strings.next);
+		hoverTooltip(ABPInst.btnNext);
+		ABPInst.btnNext[addEventListener]('click',function(e){
+			e.stopPropagation();
+			playerUnit.dispatchEvent(new Event('callNext'));
+		});
 		/** Bind the Loading Progress Bar **/
 		var pbar = playerUnit.getElementsByClassName("progress-bar");
 		if (pbar.length <= 0) return;
@@ -1250,6 +1281,8 @@ ABP.Strings={
 		var sbar = sbar[0].getElementsByClassName("bar");
 		ABPInst.barScaleHitArea = sbar[0];
 		ABPInst.barScale = sbar[0].getElementsByClassName("load")[0];
+		ABPInst.barDensityHitArea = playerUnit.querySelector('.density-bar .bar');
+		ABPInst.barDensity = ABPInst.barDensityHitArea.getElementsByClassName("load")[0];
 		/** Bind the Speed Bar **/
 		var spbar = playerUnit.getElementsByClassName("speed-bar");
 		if (spbar.length <= 0) return;
@@ -1350,19 +1383,19 @@ ABP.Strings={
 			settingsOn ? removeClass(settBtn, 'on') : addClass(settBtn, 'on');
 			settingsOn = !settingsOn;
 		};
-		ABPInst.btnSetting.addEventListener('click',settingClick);
-		playerUnit.getElementsByClassName('ABP-Settings-Close')[0].addEventListener('click',settingClick);
-		document.getElementById('setting-autoPlay').addEventListener('click',function(){
+		ABPInst.btnSetting[addEventListener]('click',settingClick);
+		playerUnit.getElementsByClassName('ABP-Settings-Close')[0][addEventListener]('click',settingClick);
+		document.getElementById('setting-autoPlay')[addEventListener]('click',function(){
 			ABPInst.autoPlay=!ABPInst.autoPlay;
 			ABPInst.autoPlay?addClass(this,'on'):removeClass(this,'on')
 			saveConfigurations();
 		});
-		document.getElementById('setting-defaultFull').addEventListener('click',function(){
+		document.getElementById('setting-defaultFull')[addEventListener]('click',function(){
 			ABPInst.defaultFull=!ABPInst.defaultFull;
 			ABPInst.defaultFull?addClass(this,'on'):removeClass(this,'on')
 			saveConfigurations();
 		});
-		document.getElementById('setting-recordPlaySpeed').addEventListener('click',function(){
+		document.getElementById('setting-recordPlaySpeed')[addEventListener]('click',function(){
 			ABPInst.recordPlaySpeed=!ABPInst.recordPlaySpeed;
 			ABPInst.recordPlaySpeed?addClass(this,'on'):removeClass(this,'on')
 			saveConfigurations();
@@ -1370,38 +1403,43 @@ ABP.Strings={
 		
 		var enabledStats={
 			videoDimension:true,
-			gecko:true,
-			webkit:true,
 			videoQuality:true,
 			flvjs:true
 		},document_querySelector=function(a){return document.querySelector(a)},
+		gEle=function(a){return document.getElementById(a)},
 		to2digitFloat=function(a){return (a*1).toFixed(2)},
 		lastChild='>:last-child',
-		playerDimension=document_querySelector('#player-dimension'+lastChild),
-		videoDimension=document_querySelector('#video-dimension'+lastChild),
-		canvasFPS=document_querySelector('#canvas-fps'+lastChild),
-		bufferColumn=document_querySelector('#buffer-health-column'),
-		realtimeBitrateColumn=document_querySelector('#realtime-bitrate-column'),
-		downloadSpeedColumn=document_querySelector('#download-speed-column'),
+		playerDimension=gEle('player-dimension').lastChild,
+		videoDimension=gEle('video-dimension').lastChild,
+		canvasFPS=gEle('canvas-fps').lastChild,
+		bufferColumn=gEle('buffer-health-column'),
+		realtimeBitrateColumn=gEle('realtime-bitrate-column'),
+		downloadSpeedColumn=gEle('download-speed-column'),
+		playFpsColumn=gEle('playback-fps-column'),
+		playFpsNum = playFpsColumn.parentNode.lastChild,
+		dropFpsColumn=gEle('drop-fps-column'),
+		dropFpsNum = dropFpsColumn.parentNode.lastChild,
 		bufferArr=[],
 		realtimeBitrateArr=[],
 		downloadSpeedArr=[],
-		bufferNum=document_querySelector('#buffer-health'+lastChild),
+		playFpsArr=[],
+		dropFpsArr=[],
+		prevPlayedFrames=0,
+		prevDroppedFrames=0,
+		bufferNum=gEle('buffer-health').lastChild,
 		svgStats='<svg style="width:180px;height:21px"><polyline style="fill:transparent;stroke:#ccc"></polyline><polyline points="1,21 180,21 180,1" style="fill:transparent;stroke:#fff"></polyline></svg>',
-		addStyle='',style=document.createElement('style'),flvjsStyle=document.createElement('style'),flvjsStats=document.querySelectorAll('.flvjs>:last-child'),i=0,
+		addStyle='',style=_('style'),flvjsStyle=_('style'),flvjsStats=document.querySelectorAll('.flvjs>:last-child'),i=0,
 		renderColumn=function(column,arr){
 			var max=0,i,points=[];
 			arr.forEach(function(i){max=(i>max)?i:max});
 			max==0&&(max=1);
 			for(i in arr){
-				if(isNaN(arr[i]))
-					arr[i]=0;
 				points.push(i*3 + ',' + (20*(1-arr[i]/max)+1) + ' ' + (i*3+3) +','+ (20*(1-arr[i]/max)+1));
 			}
 			column.setAttribute('points',points.join(' '));
 		},
 		playerStatsOn=false,
-		contextToggle=document_querySelector('#Player-Stats-Toggle'),
+		contextToggle=gEle('Player-Stats-Toggle'),
 		contextToggleListener=function(e){
 			if(e.target.id=='stats-close')
 				e.stopPropagation();
@@ -1411,31 +1449,29 @@ ABP.Strings={
 		lastCurrent=-1,
 		odd=0;
 		contextToggle[addEventListener]('click',contextToggleListener);
-		document_querySelector('#stats-close')[addEventListener]('click',contextToggleListener);
+		gEle('stats-close')[addEventListener]('click',contextToggleListener);
 		for(;i<60;i++){
 			bufferArr.push(0);
 			realtimeBitrateArr.push(0);
 			downloadSpeedArr.push(0);
+			playFpsArr.push(0);
+			dropFpsArr.push(0);
 		}
 		//bufferColumn=document.querySelectorAll('#buffer-health-column>span');
 		bufferColumn.innerHTML=svgStats;
-		bufferColumn=bufferColumn.querySelector('polyline');
+		bufferColumn=bufferColumn.firstChild.firstChild;
 		realtimeBitrateColumn.innerHTML=svgStats;
-		realtimeBitrateColumn=realtimeBitrateColumn.querySelector('polyline');
+		realtimeBitrateColumn=realtimeBitrateColumn.firstChild.firstChild;
 		downloadSpeedColumn.innerHTML=svgStats;
-		downloadSpeedColumn=downloadSpeedColumn.querySelector('polyline');
+		downloadSpeedColumn=downloadSpeedColumn.firstChild.firstChild;
+		playFpsColumn.innerHTML=svgStats;
+		playFpsColumn=playFpsColumn.firstChild.firstChild;
+		dropFpsColumn.innerHTML=svgStats;
+		dropFpsColumn=dropFpsColumn.firstChild.firstChild;
 		//realtimeBitrateColumn=document.querySelectorAll('#realtime-bitrate-column>span');
 		if(video.videoWidth==undefined){
 			enabledStats.videoDimension=false;
 			addStyle+='#video-dimension{display:none}';
-		}
-		if(video.mozDecodedFrames==undefined){
-			enabledStats.gecko=false;
-			addStyle+='.gecko{display:none}';
-		}
-		if(video.webkitDecodedFrameCount==undefined){
-			enabledStats.webkit=false;
-			addStyle+='.webkit{display:none}';
 		}
 		if(video.getVideoPlaybackQuality==undefined){
 			enabledStats.videoQuality=false;
@@ -1448,6 +1484,8 @@ ABP.Strings={
 		if(window.flvplayer==undefined){
 			enabledStats.flvjs=false;
 		}
+		
+		var flvplayerSpeedRec = [];
 		
 		setInterval(function(){
 			odd^=1;
@@ -1536,6 +1574,7 @@ ABP.Strings={
 					flvjsStats[i++].textContent=to2digitFloat(mediaInfo.videoDataRate)+' kbps';
 					flvjsStats[i++].textContent=to2digitFloat(mediaInfo.audioDataRate)+' kbps';
 					flvjsStats[i++].textContent=to2digitFloat(currentSize/currentDuration*8)+' kbps' + ('　Seg '+(segIndex+1)+'/'+statisticsInfo.totalSegmentCount);
+					i++;
 					
 					if(mediaInfo.bitrateMap){
 						
@@ -1564,6 +1603,24 @@ ABP.Strings={
 						if(playerStatsOn)
 							renderColumn(downloadSpeedColumn,downloadSpeedArr);
 						flvjsStats[i++].textContent=to2digitFloat(statisticsInfo.speed)+' KB/s'
+						//低网速监测
+						var io = flvplayer._transmuxer._controller._ioctl;
+						if (io.status === 2 && !io._paused){
+							flvplayerSpeedRec.push(statisticsInfo.speed);
+							if(flvplayerSpeedRec.length > 10) {
+								flvplayerSpeedRec.shift();
+								var sum = 0;
+								flvplayerSpeedRec.forEach(function(i){sum+=i;});
+								if (sum < 500) {
+									//超过10s均速低于50k，重新载入
+									flvplayer.reloadSegment && (flvplayer.reloadSegment(), console.log('Low average download speed in recent 10 sec, reloading'));
+									flvplayerSpeedRec = [];
+								}
+							}
+						}else{
+							// 连接/暂停/完成
+							flvplayerSpeedRec = [];
+						}
 						flvplayer._statisticsInfo.speed=0;
 					}else{
 						i++;
@@ -1603,22 +1660,21 @@ ABP.Strings={
 			if(odd)
 				canvasFPS.textContent = ABPInst.cmManager.canvasFPS;
 			
-			if(enabledStats.gecko){
-				['mozParsedFrames','mozDecodedFrames','mozPaintedFrames'].forEach(function(name){
-					document_querySelector('#'+name).textContent=video[name];
-				})
-			}
-			
-			if(enabledStats.webkit){
-				['webkitDecodedFrameCount','webkitDroppedFrameCount'].forEach(function(name){
-					document_querySelector('#'+name).textContent=video[name];
-				})
-			}
-			
-			if(enabledStats.videoQuality){
+			if(odd && enabledStats.videoQuality){
 				var quality=video.getVideoPlaybackQuality();
-				document_querySelector('#totalVideoFrames').textContent=quality.totalVideoFrames;
-				document_querySelector('#droppedVideoFrames').textContent=quality.droppedVideoFrames;
+				if (prevPlayedFrames > quality.totalVideoFrames) prevPlayedFrames = 0;
+				if (prevDroppedFrames > quality.droppedVideoFrames) prevDroppedFrames = 0;
+				var playedFrames=quality.totalVideoFrames - prevPlayedFrames;
+				var droppedFrames=quality.droppedVideoFrames - prevDroppedFrames;
+				prevPlayedFrames = quality.totalVideoFrames;
+				prevDroppedFrames = quality.droppedVideoFrames;
+				playFpsArr.push(playedFrames); playFpsArr.shift();
+				dropFpsArr.push(droppedFrames); dropFpsArr.shift();
+				if(playerStatsOn)
+					renderColumn(playFpsColumn, playFpsArr),
+					renderColumn(dropFpsColumn, dropFpsArr);
+				playFpsNum.textContent = playedFrames + ' fps';
+				dropFpsNum.textContent = droppedFrames + ' fps ' + (droppedFrames/playedFrames*100).toFixed(2)+'%';
 			}
 		},500)
 		
@@ -1642,11 +1698,32 @@ ABP.Strings={
 			if (ABP.playerConfig.autoPlay) {ABPInst.autoPlay=true; addClass(document.getElementById('setting-autoPlay'),'on');}
 			if (ABP.playerConfig.defaultWide) {ABPInst.defaultWide=true; addClass(document.getElementById('setting-defaultWide'),'on');}
 			if (ABP.playerConfig.defaultFull) {ABPInst.defaultFull=true; addClass(document.getElementById('setting-defaultFull'),'on');}
+			if (ABP.playerConfig.commentVisible===false) {addClass(ABPInst.playerUnit, 'hide-comment');removeClass(ABPInst.btnDm,'on');ABPInst.cmManager.display = false;ABPInst.cmManager.stopTimer();ABPInst.btnDm.tooltip(ABP.Strings.showComment);}
+			if (ABP.playerConfig.autoOpacity) {addClass(ABPInst.btnAutoOpacity,'on');ABPInst.cmManager.autoOpacity(true);ABPInst.btnAutoOpacity.tooltip(ABP.Strings.autoOpacityOn);}
 			if (ABP.playerConfig.recordPlaySpeed) {
 				ABPInst.recordPlaySpeed=true;
 				addClass(document.getElementById('setting-recordPlaySpeed'),'on');
 				ABPInst.lastSpeed=ABP.playerConfig.playSpeed;
 			}
+			var density = ABP.playerConfig.density||0;
+			ABPInst.cmManager.options.global.density = density;
+			var theme = ABP.playerConfig.theme||'YouTube'
+			playerUnit.setAttribute('theme', theme);
+			(document_querySelector('#setting-playerTheme [value='+theme+']') ||{}).selected=true;
+			document.getElementById('setting-playerTheme')[addEventListener]('change',function(){
+				playerUnit.setAttribute('theme',this.value);
+				saveConfigurations();
+				playerUnit.dispatchEvent(new Event('themeChange'));
+			});
+			var cmStyle = ABP.playerConfig.cmStyle || '1-0';
+			(document_querySelector('#setting-cmStyle [value="'+cmStyle+'"]') ||{}).selected=true;
+			playerUnit.querySelector('#setting-cmStyle')[addEventListener]('change',function cmStyleChange(){
+				var style = this.value.split('-');
+				ABPInst.cmManager.options.global.shadow = style[0]==1;
+				ABPInst.cmManager.options.global.outline = style[1]==1;
+				saveConfigurations && saveConfigurations();
+			});
+			playerUnit.querySelector('#setting-cmStyle').dispatchEvent(new Event('change'));
 		}
 		$$('.ABP-Comment-List-Title *').click(function() {
 			var item = $$(this).attr('item'),
@@ -1808,15 +1885,15 @@ ABP.Strings={
 					ABPInst.barVolume.style.width = (ABPInst.video.volume * 100) + "%";
 				}
 			});
-			var originalParent=null;
 			ABPInst.btnWebFull[addEventListener]("click", function() {
-				if(originalParent==null && ABPInst.playerUnit.parentNode!=document.body){
-					var currentState=ABPInst.video.paused;
-					originalParent=ABPInst.playerUnit.parentNode;
-					document.body.appendChild(ABPInst.playerUnit);
-					if(currentState!=ABPInst.video.paused)
-						ABPInst.btnPlay.click();
+				var climb = ABPInst.playerUnit.parentNode;
+				while (climb != document.body) {
+					climb.ABP_origZIndex = climb.style.zIndex;
+					climb.style.zIndex = 0xffffffff;
+					climb = climb.parentNode;
 				}
+				if(parent!=window)
+					parent.postMessage('YHP_CrossFrame_Fullscreen_Enter', '*');
 				addClass(playerUnit, "ABP-FullScreen");
 				addClass(document.body,'ABP-FullScreen');
 				ABPInst.btnFull.className = "button ABP-FullScreen icon-screen-normal";
@@ -1848,6 +1925,7 @@ ABP.Strings={
 				colorOn=!colorOn
 			});
 			var saveConfigurations = function() {
+				if (ABPInst.inited)
 				saveStorage({PlayerSettings:{
 					volume: ABPInst.video.volume,
 					opacity: ABPInst.cmManager.options.global.opacity,
@@ -1859,7 +1937,10 @@ ABP.Strings={
 					autoPlay: ABPInst.autoPlay,
 					defaultFull: ABPInst.defaultFull,
 					playSpeed: ABPInst.video.playbackRate,
-					recordPlaySpeed: ABPInst.recordPlaySpeed
+					recordPlaySpeed: ABPInst.recordPlaySpeed,
+					theme: document.getElementById('setting-playerTheme').value,
+					cmStyle: document.getElementById('setting-cmStyle').value,
+					density: ABPInst.cmManager.options.global.density
 				}});
 			}
 			ABPInst.btnAutoOpacity[addEventListener]("click", function(e) {
@@ -1869,7 +1950,6 @@ ABP.Strings={
 				this.tooltip(autoOpacity ? ABP.Strings.autoOpacityOn : ABP.Strings.autoOpacityOff);
 				saveConfigurations();
 			});
-			if (ABP.playerConfig.autoOpacity) ABPInst.btnAutoOpacity.click();
 			ABPInst.btnProp[addEventListener]("click", function(e) {
 				this.classList.toggle("on");
 				var useCSS=this.classList.contains("on");
@@ -1903,15 +1983,18 @@ ABP.Strings={
 					removeClass(playerUnit, "ABP-FullScreen");
 					removeClass(document.body,'ABP-FullScreen');
 					this.className = "button ABP-FullScreen icon-screen-full";
+					if(this.tooltipData == ABP.Strings.exitWebFull){
+						var climb = ABPInst.playerUnit.parentNode;
+						while (climb != document.body) {
+								if (climb.ABP_origZIndex != undefined)
+										climb.style.zIndex = climb.ABP_origZIndex;
+								climb = climb.parentNode;
+						}
+						if(parent!=window)
+							parent.postMessage('YHP_CrossFrame_Fullscreen_Exit', '*');
+					}
 					this.tooltip(ABP.Strings.fullScreen);
 					document.exitFullscreen();
-					if(originalParent!=null){
-						var currentState=ABPInst.video.paused;
-						originalParent.appendChild(ABPInst.playerUnit);
-						originalParent=null;
-						if(currentState!=ABPInst.video.paused)
-							ABPInst.btnPlay.click();
-					}
 				}
 				ABPInst.state.fullscreen = !ABPInst.state.fullscreen;
 				if (ABPInst.cmManager)
@@ -1956,16 +2039,17 @@ ABP.Strings={
 					ABPInst.cmManager.startTimer();
 					this.className = "button ABP-CommentShow icon-comment on";
 					this.tooltip(ABP.Strings.hideComment);
+					removeClass(ABPInst.playerUnit, 'hide-comment');
 				} else {
 					ABPInst.cmManager.display = false;
 					ABPInst.cmManager.clear();
 					ABPInst.cmManager.stopTimer();
 					this.className = "button ABP-CommentShow icon-comment";
 					this.tooltip(ABP.Strings.showComment);
+					addClass(ABPInst.playerUnit, 'hide-comment');
 				}
 				saveConfigurations();
 			});
-			if (!ABP.playerConfig.commentVisible) ABPInst.btnDm.click();
 			ABPInst.btnLoop[addEventListener]("click", function() {
 				if (ABPInst.video.loop == false) {
 					ABPInst.video.loop = true;
@@ -2010,14 +2094,6 @@ ABP.Strings={
 			senderInfoTimeout=null,senderInfoDivTimeout=null,currentSender=0,currentSenderDiv=null,
 			senderInfoCache={},
 			getSenderInfo=function(){
-				if(currentSender==0)
-					return;
-				if(senderInfoCache[currentSender]!=undefined){
-					contextMenuBody.dispatchEvent(new CustomEvent('senderInfoFetched',{detail:senderInfoCache[currentSender]}))
-					return;
-				}
-				var s=_('script',{className:'info_jsonp',src:'//account.bilibili.com/api/member/getCardByMid?type=jsonp&callback=getSenderInfo&mid='+currentSender});
-				document.body.appendChild(s);
 			},
 			addTextClick=function(){
 				shield.addText(this.getAttribute('data-text'));
@@ -2067,17 +2143,21 @@ ABP.Strings={
 						continue;
 					itemMenu[i].childNodes[0][addEventListener]('click',function(){
 						try{
-							var copy=document.createElement('input');
-							copy.style.width=0;
-							copy.style.height=0;
-							document.body.appendChild(copy);
-							copy.value=this.getAttribute('data-content');
-							copy.select();
+							/*
+							chrome需要已有input中才能复制，新生成input无效
+							*/
+							var oldVal=ABPInst.txtText.value, prevDisabled = ABPInst.txtText.disabled;
+							prevDisabled && (ABPInst.txtText.disabled=false);
+							ABPInst.txtText.value=this.dataset.content;
+							ABPInst.txtText.select();
 							var success=document.execCommand('copy');
-							document.body.removeChild(copy);
+							ABPInst.txtText.blur();
+							ABPInst.txtText.value=oldVal;
+							prevDisabled && (ABPInst.txtText.disabled=true);
 							if(!success)
 								throw '';
 						}catch(e){
+							console.error(e)
 							ABPInst.createPopup(ABP.Strings.copyFail,3e3)
 						}
 					});
@@ -2117,49 +2197,6 @@ ABP.Strings={
 				if(speed!=undefined)
 					ABPInst.video.playbackRate = speed;
 			});
-			contextMenuBody[addEventListener]('senderInfoFetched',function(e){
-				var card=e.detail;
-				if(card.mid!=currentSender || currentSenderDiv==null){
-					return;
-				}
-				var box=currentSenderDiv.parentNode.getBoundingClientRect(),x=box.left-150,y=innerHeight-box.bottom,
-				infoDiv=_('div',{className:'Context-Menu-Body',id:'Sender-Info',style:{
-					left:x+'px',
-					bottom:y+'px',
-					position:'fixed',
-					fontFamily:"-apple-system,Arial,'PingFang SC','STHeiti Light','Hiragino Kaku Gothic ProN','Microsoft YaHei'",
-					textAlign:'center'
-				}},[
-					_('div',{},[
-						_('img',{style:{height:'130px',width:'130px'},src:card.face.replace(/http\:/,'')})
-					]),
-					_('div',{},[_('text',card.name)]),
-					_('div',{},[_('text',card.mid)]),
-					_('div',{},[_('text','LV'+card.level_info.current_level)])
-				]);
-				document.body.appendChild(infoDiv);
-				if((y+infoDiv.offsetHeight)>innerHeight){
-					infoDiv.style.bottom='';
-					infoDiv.style.top=(box.top)+'px';
-				}
-				infoDiv[addEventListener]('click',function(){
-					window.open('/space/'+card.mid+'/');
-					document.body.removeChild(infoDiv);
-				})
-				infoDiv[addEventListener]('mouseenter',function(){
-					clearTimeout(senderInfoDivTimeout);
-				})
-				infoDiv[addEventListener]('mouseleave',function(){
-					clearTimeout(senderInfoDivTimeout);
-					senderInfoDivTimeout=setTimeout(function(){document.body.removeChild(document.getElementById('Sender-Info'))},500);
-				})
-			});
-			window.getSenderInfo=function(json){
-				if(json.code==0){
-					senderInfoCache[currentSender]=json.card;
-					contextMenuBody.dispatchEvent(new CustomEvent('senderInfoFetched',{detail:json.card}))
-				}
-			}
 			contextMenu[addEventListener]('click',dismissListener);
 			contextMenuBackground[addEventListener]('contextmenu',dismissListener);
 			ABPInst.videoDiv.parentNode[addEventListener]('contextmenu',function(e){
@@ -2177,98 +2214,6 @@ ABP.Strings={
 				e.stopPropagation();
 				showContextMenu(e.clientX,e.clientY,[dmData]);
 			});
-			ABPInst.videoDiv.parentNode[addEventListener]('touchstart',function(e){
-				timeDraggingMode = false;
-				ignoreDragging = false;
-				draggingTimeBase = ABPInst.video.currentTime;
-				activingContext=!1;
-				if(e.touches.length>1 && touchContextTimer!=null){
-					clearTimeout(touchContextTimer);
-					touchContextTimer=null;
-					return;
-				}
-				var box=ABPInst.divComment.getBoundingClientRect(),
-				x=e.touches[0].clientX,
-				y=e.touches[0].clientY,
-				dmList=ABPInst.cmManager.getCommentFromPoint(x-box.left,y-box.top);
-				draggingStartX = x;
-				draggingStartY = y;
-				touchContextTimer=setTimeout(function(){
-					ignoreDragging = true;
-					touchContextTimer=null;
-					activingContext=!0;
-					showContextMenu(x,y,dmList);
-				},300);
-			});
-			ABPInst.playerUnit.querySelector('.shield').addEventListener('touchstart touchmove touchend',function(e){e.stopPropagation()})
-			ABPInst.videoDiv.parentNode[addEventListener]('touchmove',function(e){
-				if(touchContextTimer!=null){
-					clearTimeout(touchContextTimer);
-					touchContextTimer=null;
-				}
-				var x=e.touches[0].clientX,
-				y=e.touches[0].clientY,
-				dx=x-draggingStartX,
-				dy=y-draggingStartY,
-				playerBox = ABPInst.videoDiv.getBoundingClientRect(),
-				playerWidth = playerBox.width,
-				playerHeight = playerBox.height;
-				if(timeDraggingMode){
-					var draggingSpeed = 0, increasing = dx>0 ? 1 : 0, speedStringMap = ['Low','Med','High'], duration = ABPInst.video.duration;
-					if( y < playerHeight/3){
-						draggingTimeBase += dx*.2;
-					}else if( y < playerHeight*2/3 ){
-						draggingTimeBase += dx*.6;
-						draggingSpeed = 1;
-					}else{
-						draggingTimeBase += dx*1.5;
-						draggingSpeed = 2;
-					}
-					draggingTimeBase = draggingTimeBase<0 ? 0 : (draggingTimeBase>duration ? duration : draggingTimeBase)
-					draggingStartX += dx;
-					if(draggingStartX-playerBox.left<50 || playerBox.right-draggingStartX<50){
-						document.querySelector('.Drag-Icon').className = 'Drag-Icon cancel';
-						document_querySelector('.Drag-Speed').textContent = ABP.Strings.dragControlCancel;
-						document_querySelector('.Drag-Time').textContent = '　';
-						cancelingDragging = true;
-					}else{
-						document.querySelector('.Drag-Icon').className = 'Drag-Icon '+ (increasing?'forward':'rewind');
-						document_querySelector('.Drag-Speed').textContent = ABP.Strings['dragControl' + speedStringMap[draggingSpeed] + (increasing?'Inc':'Dec')];
-						document_querySelector('.Drag-Time').textContent = formatTime(draggingTimeBase) +'╱'+ formatTime(duration);
-						cancelingDragging = false;
-						if(duration>0)
-							document.querySelector('.Drag-Time-Bar .fill').style.width = draggingTimeBase/duration*100 +'%'
-					}
-				}else if(!ignoreDragging){
-					if(dx<-10 || dx>10){
-						timeDraggingMode = true;
-						if(draggingDismissTimeout!=null){
-							clearTimeout(draggingDismissTimeout);
-							draggingDismissTimeout=null;
-						}
-						document_querySelector('.Drag-Control').style.display = 'block';
-					}else if( dy<-10 || dy>10 ){
-						ignoreDragging = true;
-					}
-				}
-			});
-			ABPInst.videoDiv.parentNode[addEventListener]('touchend',function(){
-				if(touchContextTimer!=null){
-					clearTimeout(touchContextTimer);
-					touchContextTimer=null;
-				}
-				if(timeDraggingMode&& !cancelingDragging){
-					ABPInst.video.currentTime = draggingTimeBase;
-				}
-				draggingDismissTimeout = setTimeout(function(){
-					document_querySelector('.Drag-Control').style.display = 'none';
-				},1e3);
-			});
-			contextMenuBody[addEventListener]('touchstart',function(e){
-				var box=contextMenuBody.getBoundingClientRect();
-				if(e.touches[0].clientX-box.left<=box.width && e.touches[0].clientY-box.top<=box.height)
-					activingContext=!0;
-			})
 
 			var sendComment = function() {
 				var date = new Date(),
@@ -2448,6 +2393,18 @@ ABP.Strings={
 			ABPInst.barVolumeHitArea[addEventListener]("mousedown", function(e) {
 				draggingVolume = true;
 			});
+			var hideVolumeTimeout=null,
+			showVolume = function(){
+				hideVolumeTimeout && clearTimeout(hideVolumeTimeout)
+				addClass(playerUnit,'volume-show');
+			},
+			hideVolume = function(){
+				hideVolumeTimeout = setTimeout(function(){removeClass(playerUnit,'volume-show');},2e3);
+			}
+			ABPInst.barVolumeHitArea[addEventListener]('mouseenter',showVolume);
+			ABPInst.btnVolume[addEventListener]('mouseenter',showVolume);
+			ABPInst.barVolumeHitArea[addEventListener]('mouseleave',hideVolume);
+			ABPInst.btnVolume[addEventListener]('mouseleave',hideVolume);
 			ABPInst.barVolume.style.width = (ABPInst.video.volume * 100) + "%";
 			var updateVolume = function(volume) {
 				ABPInst.barVolume.style.width = (volume * 100) + "%";
@@ -2491,7 +2448,6 @@ ABP.Strings={
 			var updateOpacity = function(opacity) {
 				ABPInst.barOpacity.style.width = (opacity * 100) + "%";
 				ABPInst.barOpacityHitArea.tooltip(parseInt(opacity * 100) + "%");
-				saveConfigurations();
 			}
 			document[addEventListener]("mouseup", function(e) {
 				if (draggingOpacity) {
@@ -2525,7 +2481,6 @@ ABP.Strings={
 				ABPInst.barScale.style.width = (scale - 0.2) / 1.8 * 100 + "%";
 				ABPInst.barScaleHitArea.tooltip(parseInt(scale * 100) + "%");
 				ABPInst.cmManager.setBounds();
-				saveConfigurations();
 			}
 			document[addEventListener]("mouseup", function(e) {
 				if (draggingScale) {
@@ -2550,6 +2505,60 @@ ABP.Strings={
 				}
 			});
 			hoverTooltip(ABPInst.barScaleHitArea, true, -6);
+			var draggingDensity = false;
+			ABPInst.barDensityHitArea[addEventListener]('mousedown', function() {
+				draggingDensity = true;
+			});
+			//0-0.8 -> 5-100 step 5, 0.8-0.95 -> 100-1000 step 100, 1 -> 0
+			var formatDensity = function(density){
+				if (density>=5&&density<100)
+					return ((density/5)|0)*5;
+				else if (density>=100 && density<=1000)
+					return ((density/100)|0)*100;
+				else
+					return 0
+			}
+			var updateDensity = function(density) {
+				density = formatDensity(density);
+				var width = 100;
+				if ( density >= 5 && density < 100 ) {
+					width = (density/5-1) / 19 * 80;
+				} else if ( density >= 100 && density <= 1000 ) {
+					width = (density/100-1) / 9 * 15 + 80;
+				}
+				ABPInst.barDensity.style.width = width + '%';
+				ABPInst.barDensityHitArea.tooltip(density||'无限制');
+			}
+			document[addEventListener]("mouseup", function(e) {
+				if (draggingDensity) {
+					var perc = (e.clientX - ABPInst.barScaleHitArea.getBoundingClientRect().left) / ABPInst.barScaleHitArea.offsetWidth, newDensity = 0;
+					if (perc >=0 && perc < .8){
+						newDensity = Math.round(perc/.8*19)*5+5;
+					} else if (perc >= .8 && perc <= .95) {
+						newDensity = Math.round((perc-.8)/.15*9)*100+100;
+					}
+					ABPInst.cmManager.options.global.density = newDensity;
+					updateDensity(newDensity);
+					saveConfigurations();
+				}
+				draggingDensity = false;
+			});
+			document[addEventListener]("mousemove", function(e) {
+				var perc = (e.clientX - ABPInst.barScaleHitArea.getBoundingClientRect().left) / ABPInst.barScaleHitArea.offsetWidth, newDensity = 0;
+				if (perc >=0 && perc < .8){
+					newDensity = Math.round(perc/.8*19)*5+5;
+				} else if (perc >= .8 && perc <= .95) {
+					newDensity = Math.round((perc-.8)/.15*9)*100+100;
+				}
+				if (draggingDensity) {
+					ABPInst.cmManager.options.global.density = newDensity;
+					updateDensity(newDensity);
+				} else {
+					ABPInst.barDensityHitArea.tooltip(newDensity||'无限制');
+				}
+			});
+			hoverTooltip(ABPInst.barDensityHitArea, true, -6);
+			updateDensity(ABPInst.cmManager.options.global.density);
 			/*Copy from scale bar*/
 			var draggingSpeed = false;
 			ABPInst.barSpeedHitArea[addEventListener]("mousedown", function(e) {
@@ -2630,8 +2639,8 @@ ABP.Strings={
 						e.preventDefault();
 					switch (e.keyCode) {
 						case 27:
-							if(abpinst.state.fullscreen)
-								abpinst.btnFull.click();
+							if(ABPInst.state.fullscreen)
+								ABPInst.btnFull.click();
 						break;
 						case 32:
 							ABPInst.btnPlay.click();
@@ -2655,61 +2664,37 @@ ABP.Strings={
 							ABPInst.barTimeHitArea.tooltip(formatTime(video.currentTime));
 							break;
 						case 38:
-							var newVolume = ABPInst.video.volume + .1;
-							if (newVolume > 1) newVolume = 1;
-							ABPInst.video.volume = newVolume.toFixed(3);
-							updateVolume(ABPInst.video.volume);
+							if(e.ctrlKey){
+								var newSpeed = ABPInst.video.playbackRate + .05;
+								if (newSpeed > 2) newSpeed = 2;
+								ABPInst.video.playbackRate = newSpeed.toFixed(3);
+								ABPInst.removePopup();
+								ABPInst.createPopup(ABP.Strings.rateChange + ((newSpeed*1e2)|0) + '%',1e3);
+							}else{
+								var newVolume = ABPInst.video.volume + .1;
+								if (newVolume > 1) newVolume = 1;
+								ABPInst.video.volume = newVolume.toFixed(3);
+								updateVolume(ABPInst.video.volume);
+								ABPInst.removePopup();
+								ABPInst.createPopup(ABP.Strings.volumeChange + ((newVolume*1e2)|0) + '%',1e3);
+							}
 							break;
 						case 40:
-							var newVolume = ABPInst.video.volume - .1;
-							if (newVolume < 0) newVolume = 0;
-							ABPInst.video.volume = newVolume.toFixed(3);
-							updateVolume(ABPInst.video.volume);
+							if(e.ctrlKey){
+								var newSpeed = ABPInst.video.playbackRate - .05;
+								if (newSpeed < .5) newSpeed = .5;
+								ABPInst.video.playbackRate = newSpeed.toFixed(3);
+								ABPInst.removePopup();
+								ABPInst.createPopup(ABP.Strings.rateChange + ((newSpeed*1e2)|0) + '%',1e3);
+							}else{
+								var newVolume = ABPInst.video.volume - .1;
+								if (newVolume < 0) newVolume = 0;
+								ABPInst.video.volume = newVolume.toFixed(3);
+								updateVolume(ABPInst.video.volume);
+								ABPInst.removePopup();
+								ABPInst.createPopup(ABP.Strings.volumeChange + ((newVolume*1e2)|0) + '%',1e3);
+							}
 							break;
-					}
-				}
-			});
-			playerUnit[addEventListener]("touchmove", function(e) {
-				e.preventDefault();
-			});
-			var _touch = null;
-			playerUnit[addEventListener]("touchstart", function(e) {
-				if (hasClass(ABPInst.videoDiv, "ABP-HideCursor")) {
-					removeClass(ABPInst.videoDiv, "ABP-HideCursor");
-				}
-				if (e.targetTouches.length > 0) {
-					//Determine whether we want to start or stop
-					_touch = e.targetTouches[0];
-				}
-			});
-			playerUnit[addEventListener]("touchend", function(e) {
-				addClass(ABPInst.videoDiv, "ABP-HideCursor");
-				if (e.changedTouches.length > 0) {
-					if (_touch != null) {
-						var diffx = e.changedTouches[0].pageX - _touch.pageX;
-						var diffy = e.changedTouches[0].pageY - _touch.pageY;
-						if (Math.abs(diffx) < 20 && Math.abs(diffy) < 20) {
-							_touch = null;
-							return;
-						}
-						if (Math.abs(diffx) > 3 * Math.abs(diffy)) {
-							if (diffx > 0) {
-								if (ABPInst.video.paused) {
-									ABPInst.btnPlay.click();
-								}
-							} else {
-								if (!ABPInst.video.paused) {
-									ABPInst.btnPlay.click();
-								}
-							}
-						} else if (Math.abs(diffy) > 3 * Math.abs(diffx)) {
-							if (diffy < 0) {
-								ABPInst.video.volume = Math.min(1, ABPInst.video.volume + 0.1)
-							} else {
-								ABPInst.video.volume = Math.max(0, ABPInst.video.volume - 0.1)
-							}
-						}
-						_touch = null;
 					}
 				}
 			});
@@ -2749,9 +2734,9 @@ ABP.Strings={
 			}
 		}
 		shield.init(ABPInst);
-		document_querySelector('.shield-enrty').addEventListener('click',shield.show);
-		document_querySelector('.shield_top .close').addEventListener('click',shield.show);
-		document_querySelector('.shield_item .add').addEventListener('click',shield.add);
+		document_querySelector('.shield-enrty')[addEventListener]('click',shield.show);
+		document_querySelector('.shield_top .close')[addEventListener]('click',shield.show);
+		document_querySelector('.shield_item .add')[addEventListener]('click',shield.add);
 		return ABPInst;
 	}
 })();/*

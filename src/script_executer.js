@@ -1,10 +1,24 @@
 chrome.runtime.onMessage.addListener(function (message, sender, resolve) {
-    if (message != 'inject') return;
-    let tabId = sender.tab.id,
-        frameId = sender.frameId;
-    injector(tabId, frameId, resolve);
-    return true;
-})
+    if (message == 'version') {
+        resolve(extVersion);
+    } else if (message == 'hasNewVersion') {
+        resolve(hasNewVersion);
+    } else if (message == 'inject') {
+        let tabId = sender.tab.id,
+            frameId = sender.frameId;
+        injector(tabId, frameId, resolve);
+        return true;
+    } else if (message == 'cna') {
+        fetch('https://log.mmstat.com/eg.js', {
+            method: 'GET',
+            credentials: 'include',
+            cache: 'no-cache'
+        }).then(function (r) {
+            r.text().then(resolve);
+        });
+        return true;
+    }
+});
 
 function injector(tabId, frameId, resolve) {
     let files = [

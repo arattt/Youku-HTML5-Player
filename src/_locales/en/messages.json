@@ -11,23 +11,11 @@
     "statsBufferClip": {
         "message": "Buffer clips："
     },
-    "statsMozParse": {
-        "message": "Parsed frames："
-    },
-    "statsMozDecode": {
-        "message": "Decoded frames："
-    },
-    "statsMozPaint": {
-        "message": "Painted frames："
-    },
-    "statsWebkitDecode": {
-        "message": "Decoded frames："
-    },
     "statsPresent": {
-        "message": "Presented frames："
+        "message": "Expected fps："
     },
     "statsDrop": {
-        "message": "Dropped frames："
+        "message": "Drop rate："
     },
     "statsMimetype": {
         "message": "MIME type："
@@ -46,6 +34,9 @@
     },
     "overallBitrate": {
         "message": "Overall bitrate："
+    },
+    "reload": {
+        "message": "Reload"
     },
     "statsDownloadSpeed": {
         "message": "Download speed："
@@ -85,6 +76,9 @@
     },
     "commentScale": {
         "message": "Comment scale"
+    },
+    "commentDensity": {
+        "message": "Comment density"
     },
     "commentOpacity": {
         "message": "Comment opacity"
@@ -282,10 +276,10 @@
         "message": "Cancelling"
     },
     "extName": {
-        "message": "Youku HTML5 Player"
+        "message": "Yet Another Player for Youku"
     },
     "extDesc": {
-        "message": "Farewell to flash and ads. \n\nOpen source：https://github.com/esterTion/Youku-HTML5-Player"
+        "message": "A handful player built for easy use in youku. \n\nOpen source：https://github.com/esterTion/Youku-HTML5-Player"
     },
     "iconPending": {
         "message": " video(s) pending playback"
@@ -350,6 +344,9 @@
     "playErr": {
         "message": "Playback error"
     },
+    "playErrPop": {
+        "message": " failed to play, downgrading to "
+    },
     "switchErr": {
         "message": "Switching failed, this language / definition cannot be played"
     },
@@ -365,46 +362,100 @@
     "uploader": {
         "message": "Uploader："
     },
-    "outputUrl":{
-        "message":"Output all parts"
+    "outputUrl": {
+        "message": "Output all parts"
     },
-    "noVisitorComment":{
-        "message":"Visitor can't post comments"
+    "noVisitorComment": {
+        "message": "Visitor can't post comments"
     },
-    "postCommentFail":{
-        "message":"Post comment failed"
+    "postCommentFail": {
+        "message": "Post comment failed"
     },
-    "replaceEmbed":{
-        "message":"Replace embed players"
+    "replaceEmbed": {
+        "message": "Replace embed players"
     },
-    "autoSwitch":{
-        "message":"Auto jump to next episode"
+    "autoSwitch": {
+        "message": "Auto jump to next episode"
     },
-    "mayBlocked":{
-        "message":"You may have enabled an ad blocker, and it had blocked some important content. Please try again after disable the blocker. \nAfter player normally loaded, you can enable blocker again. \n\nIf you had seen this note in the past, please check your network status. "
+    "mayBlocked": {
+        "message": "You may have enabled an ad blocker, and it had blocked some important content. Please try again after disable the blocker. \nAfter player normally loaded, you can enable blocker again. \n\nIf you had seen this note in the past, please check your network status. "
     },
-    "officialHtml5":{
-        "message":"Enable official html5 player (unstable)"
+    "officialHtml5": {
+        "message": "Use official html5 player"
     },
-    "settings":{
-        "message":"Settings"
+    "settings": {
+        "message": "Settings"
     },
-    "settComment":{
-		"message":"Comment preferences"
-	},
-	"recordPlaySpeed":{
-		"message":"Set current speed as default"
-	},
-	"settPlayer":{
-		"message":"Player preferences"
-	},
-	"autoPlay":{
-		"message":"Start playback automatically"
-	},
-	"defaultFull":{
-		"message":"Enter fullscreen mode automatically"
-	},
-    "settExtension":{
-        "message":"Extension preferences"
+    "settComment": {
+        "message": "Comment preferences"
+    },
+    "recordPlaySpeed": {
+        "message": "Set current speed as default"
+    },
+    "settPlayer": {
+        "message": "Player preferences"
+    },
+    "autoPlay": {
+        "message": "Start playback automatically"
+    },
+    "defaultFull": {
+        "message": "Enter fullscreen mode automatically"
+    },
+    "settExtension": {
+        "message": "Extension preferences"
+    },
+    "statsSourceHost": {
+        "message": "Source host："
+    },
+    "statsRedirection": {
+        "message": "Redirection："
+    },
+    "statsRedirectionNone": {
+        "message": "None"
+    },
+    "extUpdated": {
+        "message": "Yet Another Player for Youku has been updated!"
+    },
+    "extUpdated_ver": {
+        "message": "We are currently at version "
+    },
+    "extUpdated_detail": {
+        "message": "Here are some update notes:\n1、Project has been renamed to 【Yet Another Player for Youku】\n2、Attempt to play the lower quality video when playback error occurs."
+    },
+    "playerTheme": {
+        "message": "Player theme"
+    },
+	"cmStyle":{
+        "message": "Comment style: "
+    },
+	"cmStyle_st":{
+        "message": "Stroke"
+    },
+	"cmStyle_sh":{
+        "message": "Shadow"
+    },
+	"cmStyle_stsh":{
+        "message": "Stroke & Shadow"
+    },
+    "next": {
+        "message": "Next video: "
+    },
+    "storylinePoints": {
+        "message": "Timeline Highlights"
+    },
+    "skipHead": {
+        "message": "Skip the opening and ending part"
+    },
+    "volumeChange": {
+        "message": "Volume changed to "
+    },
+    "rateChange": {
+        "message": "Speed changed to "
+    },
+    "hasNewVersion": {
+        "message": "New version available："
+    },
+    "m3uPlaylist" : {
+        "message": "[M3U8 Playlist File]"
     }
 }
